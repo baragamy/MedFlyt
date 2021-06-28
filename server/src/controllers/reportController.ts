@@ -20,7 +20,7 @@ FROM caregiver
 JOIN visit ON visit.caregiver = caregiver.id
 JOIN patient ON patient.id = visit.patient
 WHERE  EXTRACT(YEAR FROM visit.date) = $1
-group by caregiver.id,caregiver.name
+group by caregiver.name
     `;
 
     
