@@ -13,20 +13,20 @@ interface Report {
 export const getReport = async (req: Request, res: Response) => {
 
     const sql = `
-        SELECT
-            caregiver.id      AS caregiver_id,
-            caregiver.name    AS caregiver_name,
-            patient.id        AS patient_id,
-            patient.name      AS patient_name,
-            visit.date        AS visit_date
-        FROM caregiver
-        JOIN visit ON visit.caregiver = caregiver.id
-        JOIN patient ON patient.id = visit.patient
+    SELECT
+    caregiver.name    AS caregiver_name,
+    string_agg(patient.name, ', ')     AS patient_name
+FROM caregiver
+JOIN visit ON visit.caregiver = caregiver.id
+JOIN patient ON patient.id = visit.patient
+WHERE  EXTRACT(YEAR FROM visit.date) = $1
+group by caregiver.name
     `;
+
     
     let result : QueryResult;
     try {
-        result = await dbUtil.sqlToDB(sql, []);
+        result = await dbUtil.sqlToDB(sql, [req.params.year]);
         const report: Report = {
             year: parseInt(req.params.year),
             caregivers: []
